@@ -1,0 +1,8 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+sqlalchemy[asyncio]>=2.0.36
+psycopg[binary]>=3.2
+alembic>=1.14
+httpx>=0.28
+pydantic-settings>=2.6
+cryptography>=43
