@@ -12,3 +12,10 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+
+[tool.ruff.lint.per-file-ignores]
+# conftest sets environment variables before importing the app, on purpose
+"tests/conftest.py" = ["E402"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "BLE", "FURB"]

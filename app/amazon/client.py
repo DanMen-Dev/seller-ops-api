@@ -171,7 +171,7 @@ class AmazonClient:
         })
         details = resp.json()["payload"]["FeesEstimateResult"]["FeesEstimate"]["FeeDetailList"]
         fees = {f["FeeType"]: Decimal(str(f["FinalFee"]["Amount"])) for f in details}
-        return fees.get("ReferralFee", Decimal("0")), fees.get("FBAFees", Decimal("0"))
+        return fees.get("ReferralFee", Decimal(0)), fees.get("FBAFees", Decimal(0))
 
     async def get_daily_sales(self, sku: str, marketplace: str, start: date, end: date) -> list[tuple[date, int, Decimal, str]]:
         """Sales API orderMetrics by day for one SKU: [(day, units, revenue, currency)], end exclusive."""

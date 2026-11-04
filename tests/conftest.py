@@ -10,20 +10,20 @@ os.environ.setdefault("ENCRYPTION_KEY", Fernet.generate_key().decode())
 os.environ["AMAZON_REPORT_POLL_SECONDS"] = "0"
 os.environ["LWA_URL"] = os.environ["SP_API_URL"] = os.environ["ADS_API_URL"] = "http://mock-amazon"
 
-import httpx  # noqa: E402
-import pytest  # noqa: E402
-from alembic import command  # noqa: E402
-from alembic.config import Config  # noqa: E402
-from sqlalchemy import text  # noqa: E402
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine  # noqa: E402
-from sqlalchemy.pool import NullPool  # noqa: E402
+import httpx
+import pytest
+from alembic.config import Config
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
-import mock_amazon.app as mock  # noqa: E402
-from app.db import get_session  # noqa: E402
-from app.deps import get_http  # noqa: E402
-from app.main import app  # noqa: E402
-from app.models import Base, Tenant  # noqa: E402
-from app.security import encrypt, hash_api_key, new_api_key  # noqa: E402
+import mock_amazon.app as mock
+from alembic import command
+from app.db import get_session
+from app.deps import get_http
+from app.main import app
+from app.models import Base, Tenant
+from app.security import encrypt, hash_api_key, new_api_key
 
 DB_URL = os.environ["DATABASE_URL"]
 ROOT = os.path.dirname(os.path.dirname(__file__))

@@ -175,6 +175,11 @@ async def report_status(request: Request, report_id: str):
     return {"reportId": report_id, "status": "COMPLETED", "url": f"{request.base_url}downloads/{report_id}"}
 
 
+def _whole(value: float, odd_day: int) -> int:
+    """Fractional daily values (0.5 clicks) become whole numbers on alternate days."""
+    return int(value) + (1 if odd_day and value % 1 else 0)
+
+
 @app.get("/downloads/{report_id}")
 async def download(report_id: str):
     """Pre-signed download (the real one is gzip-compressed JSON on S3)."""
@@ -182,13 +187,10 @@ async def download(report_id: str):
     rows, day = [], report["start"]
     while day <= report["end"]:
         for kw, (campaign, text, match, _, (imp, clicks, spend, sales, orders)) in KEYWORDS.items():
-            # fractional daily values (0.5 clicks) become whole numbers on alternate days
             odd = day.toordinal() % 2
-            def whole(x):
-                return int(x) + (1 if odd and x % 1 else 0)
             rows.append({"date": day.isoformat(), "campaignId": campaign, "keywordId": kw, "keyword": text,
                          "matchType": match, "keywordBid": BIDS[kw]["bid"], "impressions": imp,
-                         "clicks": whole(clicks), "cost": spend, "sales14d": sales, "purchases14d": whole(orders)})
+                         "clicks": _whole(clicks, odd), "cost": spend, "sales14d": sales, "purchases14d": _whole(orders, odd)})
         day += timedelta(days=1)
     return rows
 

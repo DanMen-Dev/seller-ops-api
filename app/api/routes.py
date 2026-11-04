@@ -12,7 +12,13 @@ from app.db import get_session
 from app.deps import get_amazon_client
 from app.models import BidChange, DailySales, Inventory, KeywordStat, Offer, Product, SyncRun, Tenant
 from app.schemas import (
-    ApplyResult, BidRecommendation, Margin, ProductOut, ProductUpdate, StockAlert, SyncRunOut,
+    ApplyResult,
+    BidRecommendation,
+    Margin,
+    ProductOut,
+    ProductUpdate,
+    StockAlert,
+    SyncRunOut,
 )
 from app.security import get_tenant
 from app.services.margins import MarginInput, unit_margin

@@ -5,7 +5,7 @@ writes run afterwards in one session, because an AsyncSession must not be shared
 Upserts (INSERT ... ON CONFLICT DO UPDATE) make the sync idempotent: running it twice is safe.
 """
 import asyncio
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from sqlalchemy import func
@@ -59,7 +59,7 @@ async def sync_tenant(session: AsyncSession, tenant: Tenant, client: AmazonClien
         pairs = [(i.sku, m) for i in items for m in tenant.marketplaces]
         results = await asyncio.gather(*(_offer_and_sales(client, sku, m, start, end) for sku, m in pairs))
         offers, sales = [], []
-        for (sku, m), (offer, daily) in zip(pairs, results):
+        for (sku, m), (offer, daily) in zip(pairs, results, strict=True):
             if offer:
                 listing, referral, fba = offer
                 offers.append({"tenant_id": tenant_id, "sku": sku, "marketplace": m, "price": listing.price,
@@ -87,12 +87,12 @@ async def sync_tenant(session: AsyncSession, tenant: Tenant, client: AmazonClien
         run.status = "ok"
         run.stats = {"products": len(items), "offers": len(offers), "sales_rows": len(sales),
                      "keyword_rows": len(keywords), "window": [start.isoformat(), end.isoformat()]}
-    except Exception as exc:  # noqa: BLE001 - record any failure on the run, then report it
+    except Exception as exc:  # noqa: BLE001 - any failure is recorded on the run
         await session.rollback()  # nothing half-written: the data stays as of the last good sync
         run = await session.get(SyncRun, run_id)
         run.status = "failed"
         run.error = repr(exc)[:2000]
 
-    run.finished_at = datetime.now(timezone.utc)
+    run.finished_at = datetime.now(UTC)
     await session.commit()
     return run

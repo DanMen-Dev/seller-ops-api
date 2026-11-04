@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
 VAT_RATES = {"ES": Decimal("0.21"), "DE": Decimal("0.19"), "FR": Decimal("0.20"),
-             "IT": Decimal("0.22"), "UK": Decimal("0.20"), "US": Decimal("0")}  # US prices exclude sales tax
+             "IT": Decimal("0.22"), "UK": Decimal("0.20"), "US": Decimal(0)}  # US prices exclude sales tax
 CENT = Decimal("0.01")
 
 
