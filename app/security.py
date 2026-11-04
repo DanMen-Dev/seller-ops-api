@@ -4,7 +4,8 @@ import secrets
 from typing import Annotated
 
 from cryptography.fernet import Fernet
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,9 +38,13 @@ def decrypt(token: str) -> str:
     return _fernet().decrypt(token.encode()).decode()
 
 
+# Declared as a security scheme, so /docs shows an "Authorize" button where the key is entered once.
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False, description="Tenant API key (so_...)")
+
+
 async def get_tenant(
     session: Annotated[AsyncSession, Depends(get_session)],
-    x_api_key: Annotated[str | None, Header()] = None,
+    x_api_key: Annotated[str | None, Security(api_key_header)] = None,
 ) -> Tenant:
     """Resolves the tenant from the X-API-Key header. Every endpoint filters its queries by this tenant."""
     if x_api_key:
